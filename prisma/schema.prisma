@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Reporter {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bugs     Bug[]
+  comments Comment[]
+  role     Role?     @relation(fields: [roleId], references: [id])
+  roleId   String?
+
+  @@map("reporters")
+}
+
+model Bug {
+  id        String   @id @default(uuid())
+  title     String
+  details   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reporter   Reporter? @relation(fields: [reporterId], references: [id])
+  reporterId String?
+  comments   Comment[]
+  tags       Tag[]
+
+  @@map("bugs")
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  bugs      Bug[]
+
+  @@map("tags")
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reporters Reporter[]
+
+  @@map("roles")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  commenter   Reporter? @relation(fields: [commenterId], references: [id])
+  commenterId String?
+  bug         Bug?      @relation(fields: [bugId], references: [id])
+  bugId       String?
+
+  @@map("comments")
+}
