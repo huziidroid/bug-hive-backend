@@ -12,7 +12,7 @@ import { ERROR_MESSAGES } from 'src/shared';
 export class ReportersService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getAllReporters() {
+  async findAll() {
     try {
       const reporters = await this.prismaService.reporter.findMany({
         include: { role: { select: { name: true, id: true } } },
@@ -24,7 +24,7 @@ export class ReportersService {
   }
 
   // get single Reporter
-  async getReporterById(id: string) {
+  async findOne(id: string) {
     try {
       const reporter = await this.prismaService.reporter.findFirstOrThrow({
         where: { id },

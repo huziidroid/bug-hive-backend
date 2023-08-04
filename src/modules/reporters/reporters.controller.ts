@@ -1,4 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
+
 import { ReportersService } from './reporters.service';
 
 @Controller('reporters')
@@ -6,12 +7,12 @@ export class ReportersController {
   constructor(private readonly reportersService: ReportersService) {}
 
   @Get()
-  async allReporters() {
-    return this.reportersService.getAllReporters();
+  async findAll() {
+    return this.reportersService.findAll();
   }
 
   @Get(':id')
-  async getReporterById(@Param('id') id: string) {
-    return this.reportersService.getReporterById(id);
+  async findOne(@Param('id') id: string) {
+    return this.reportersService.findOne(id);
   }
 }

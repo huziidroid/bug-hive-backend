@@ -61,7 +61,7 @@ export class AuthService {
           throw new ForbiddenException(ERROR_MESSAGES.USER_ALREADY_EXISTS);
         }
       }
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(error);
     }
   }
 
