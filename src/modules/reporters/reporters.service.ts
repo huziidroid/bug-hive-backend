@@ -3,21 +3,25 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { Prisma } from '@prisma/client';
 
-import { ERROR_MESSAGES } from 'src/shared';
+import { PrismaService } from '../prisma/prisma.service';
+import { ERROR_MESSAGES, paginator } from 'src/shared';
+import { FindAllQueryParams } from './dtos';
+import { ReporterEntity } from 'src/entities';
 
 @Injectable()
 export class ReportersService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findAll() {
+  async findAll({ page = 1, perPage = 10 }: FindAllQueryParams) {
     try {
-      const reporters = await this.prismaService.reporter.findMany({
-        include: { role: { select: { name: true, id: true } } },
-      });
-      return reporters;
+      return await paginator<ReporterEntity, Prisma.ReporterFindManyArgs>(
+        this.prismaService.reporter,
+        ReporterEntity,
+        { page, perPage },
+      );
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -30,7 +34,7 @@ export class ReportersService {
         where: { id },
         include: { role: { select: { id: true, name: true } } },
       });
-      return reporter;
+      return new ReporterEntity(reporter);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {

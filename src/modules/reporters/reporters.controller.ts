@@ -1,14 +1,17 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 
 import { ReportersService } from './reporters.service';
-
+import { FindAllQueryParams } from './dtos';
+import { Serialize } from 'src/common';
+import { ReporterEntity } from 'src/entities';
+@Serialize(ReporterEntity)
 @Controller('reporters')
 export class ReportersController {
   constructor(private readonly reportersService: ReportersService) {}
 
   @Get()
-  async findAll() {
-    return this.reportersService.findAll();
+  async findAll(@Query() query: FindAllQueryParams) {
+    return this.reportersService.findAll(query);
   }
 
   @Get(':id')
